@@ -1,8 +1,8 @@
-#include "stm32f1xx.h"
-#include "i2c.h"
+#include <stm32f1xx.h>
+#include <i2c.h>
 
-#include "main.h"
-#include "lcd.h"
+#include <main.h>
+#include <lcd.h>
 
 const uint8_t LCD_ADDRESS = 0x27 << 1;
 const uint8_t PIN_RS = 0x01;

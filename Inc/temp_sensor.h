@@ -8,7 +8,7 @@
 #ifndef TEMP_SENSOR_H_
 #define TEMP_SENSOR_H_
 
-#include "stm32f1xx.h"
+#include <stm32f1xx.h>
 
 typedef struct {
 	uint16_t relative_humidity;

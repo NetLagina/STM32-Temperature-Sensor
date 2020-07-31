@@ -5,8 +5,9 @@
  *      Author: NetL
  */
 
-#include "gpio.h"
-#include "temp_sensor.h"
+#include <gpio.h>
+
+#include <temp_sensor.h>
 
 const uint32_t MAX_TIMER = 20000;
 

@@ -19,17 +19,17 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-#include "i2c.h"
-#include "gpio.h"
+#include <main.h>
+#include <i2c.h>
+#include <gpio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
-#include "led.h"
-#include "lcd.h"
-#include "temp_sensor.h"
+#include <lcd.h>
+#include <led.h>
+#include <temp_sensor.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,12 +57,13 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void LCD_display_welcome(void);
+void LCD_display_goodbye(void);
 void LCD_sendTemperature(TemperatureSensor ts);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint_fast8_t update_temperature = 1;
+
 /* USER CODE END 0 */
 
 /**
@@ -96,7 +97,6 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_Delay(1000);
   LCD_Init();
   temperature_sensor_init();
 
@@ -108,8 +108,9 @@ int main(void)
     ts = get_temperature_sensor_data(ts);
   } while (!ts.is_valid);
   LCD_sendTemperature(ts);
-  LCD_Backlight(LCD_BACKLIGHT_ON);
   HAL_Delay(10000);
+  LCD_Clear();
+  LCD_display_goodbye();
   LCD_Backlight(LCD_BACKLIGHT_OFF);
 
   LED_State(LED_OFF);
@@ -208,7 +209,30 @@ void LCD_display_welcome(void) {
 	HAL_Delay(2500);
 	LCD_Clear();
 	LCD_SendCommand(0b1100);
-	LCD_Backlight(LCD_BACKLIGHT_OFF);
+}
+
+void LCD_display_goodbye(void) {
+	uint_fast8_t delay = 100;
+	LCD_SendCommand(0b10000000);
+	LCD_SendString("    G");
+	HAL_Delay(delay);
+	LCD_SendString("o");
+	HAL_Delay(delay);
+	LCD_SendString("o");
+	HAL_Delay(delay);
+	LCD_SendString("d");
+	HAL_Delay(delay);
+	LCD_SendString("b");
+	HAL_Delay(delay);
+	LCD_SendString("y");
+	HAL_Delay(delay);
+	LCD_SendString("e");
+	HAL_Delay(delay);
+	LCD_SendString("!");
+	HAL_Delay(delay);
+	HAL_Delay(2500);
+	LCD_Clear();
+	LCD_SendCommand(0b1100);
 }
 
 void LCD_sendTemperature(TemperatureSensor ts) {
@@ -228,12 +252,6 @@ void LCD_sendTemperature(TemperatureSensor ts) {
 		LCD_SendString("  TEMP. SENSOR");
 		LCD_SendCommand(0b11000000);
 		LCD_SendString("     ERROR");
-	}
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == GPIO_PIN_0) {
-		update_temperature = 1;
 	}
 }
 /* USER CODE END 4 */
