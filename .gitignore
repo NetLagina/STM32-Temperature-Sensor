@@ -52,6 +52,7 @@ Mkfile.old
 dkms.conf
 
 # STM32CubeIDE
+Release/
 Debug/
 .settings/
 .cproject
