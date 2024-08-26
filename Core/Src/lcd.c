@@ -8,12 +8,12 @@ const uint8_t PIN_RS = 0x01;
 const uint8_t PIN_EN = 0x04;
 const uint8_t BACKLIGHT = 0x08;
 
-I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c1_lcd;
 
 void I2C_Scan(void) {
 	HAL_StatusTypeDef res;
 	for (uint16_t i = 0; i < 128; i++) {
-		res = HAL_I2C_IsDeviceReady(&hi2c1, i << 1, 1, 10);
+		res = HAL_I2C_IsDeviceReady(&hi2c1_lcd, i << 1, 1, 10);
 		if (res == HAL_OK) {
 			return;
 		}
@@ -23,7 +23,7 @@ void I2C_Scan(void) {
 HAL_StatusTypeDef LCD_SendInternal(uint8_t data, uint8_t flags) {
 	HAL_StatusTypeDef res;
 	do {
-		res = HAL_I2C_IsDeviceReady(&hi2c1, LCD_ADDRESS, 1, HAL_MAX_DELAY);
+		res = HAL_I2C_IsDeviceReady(&hi2c1_lcd, LCD_ADDRESS, 1, HAL_MAX_DELAY);
 		if (res == HAL_OK) {
 			break;
 		}
@@ -38,7 +38,7 @@ HAL_StatusTypeDef LCD_SendInternal(uint8_t data, uint8_t flags) {
 	data_arr[2] = lo | flags | BACKLIGHT | PIN_EN;
 	data_arr[3] = lo | flags | BACKLIGHT;
 
-	res = HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDRESS, data_arr, sizeof(data_arr), HAL_MAX_DELAY);
+	res = HAL_I2C_Master_Transmit(&hi2c1_lcd, LCD_ADDRESS, data_arr, sizeof(data_arr), HAL_MAX_DELAY);
 	HAL_Delay(10);
 	return res;
 }
@@ -48,8 +48,8 @@ void LCD_Backlight(LCD_Backlight_State state) {
 	if (LCD_BACKLIGHT_OFF == state) {
 		data[0] = 0;
 	}
-	HAL_I2C_IsDeviceReady(&hi2c1, LCD_ADDRESS, 1, HAL_MAX_DELAY);
-	HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDRESS, data, 1, HAL_MAX_DELAY);
+	HAL_I2C_IsDeviceReady(&hi2c1_lcd, LCD_ADDRESS, 1, HAL_MAX_DELAY);
+	HAL_I2C_Master_Transmit(&hi2c1_lcd, LCD_ADDRESS, data, 1, HAL_MAX_DELAY);
 }
 
 void LCD_SendCommand(uint8_t cmd) {
@@ -65,7 +65,7 @@ void LCD_Clear(void) {
 }
 
 void LCD_Init(I2C_HandleTypeDef _hi2c1) {
-	hi2c1 = _hi2c1;
+	hi2c1_lcd = _hi2c1;
 	HAL_Delay(50);
 	LCD_SendCommand(0b00110000);
 	HAL_Delay(20);
